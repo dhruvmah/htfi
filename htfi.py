@@ -1,25 +1,9 @@
 import requests
-import json
 import csv
+import time
 
-'''
-Built by Hack4Impact for the Healthy Food Truck Initiative
 
-This script reads in a file consisting of types of ingredients (each ingredient on its own line) and then generates a
-CSV file that writes out the nutrients associated with each ingredient. This relies on the USDA Nutrient API and since there
-are many types of similar ingredients (ie. Bagel, eggs and Bagel, onions), the user of this script must indicated which ingredient
-search result they want entered into their database. 
-
-In order to add new ingredients to an existing spreadsheet, simply create a new file called "ingredients.csv", with each new
-ingredient on a new line. As the code runs, it will add new rows to any file called "processed.csv", as long as it is located
-in the same folder directory as the code. If the file does not exist, it will create a new one, called "processed.csv".
-
-You can run this file by opening Terminal, navigating to the folder in which this file is located, and typing "python htfi.py"
-
-For any questions, please contact us at admin@hack4impact.org
-
-'''
-
+not_found = []
 
 def add_nutrient_to_dataset(hashed, value):
 	try: 
@@ -33,7 +17,6 @@ def get_nutrient_info(number):
 	response = requests.get(url)
 	nutrients = response.json()["report"]["food"]["nutrients"]
 	hashed = {}
-	print nutrients
 	for nutrient in nutrients:
 		hashed[nutrient["name"]] = (nutrient["unit"].encode('ascii', 'ignore').decode('ascii'), nutrient["value"])
 
@@ -143,19 +126,23 @@ def get_data():
 		    	response = requests.get(url)
 		    	print "Next Item, Searching For: " + row[0]
 		    	if response.json().get("errors"):
-			    	print "nothing found for ingredient: ", q_parameter
+			    	print "Nothing found for ingredient: ", q_parameter, "\n"
+			    	not_found.append(row[0])
 		    	else:
+		    		print "Please select one of the following: "
 			    	for i, item in enumerate(response.json()['list']['item']):
-						print i,".", item['name'], ", Code Number: ", item['ndbno']
+						print i,".", item['name'], ", NDB Number: ", item['ndbno']
 		    		s = raw_input('Indicate which ingredient to choose by picking a number. Press Enter once you type in the number. \n')
 		    		while(int(s) >= len(response.json()['list']['item'])):
 		    			s = raw_input(' The number you indicated is out of range. Please try again.\n')
 		    		print "You selected: ", response.json()['list']['item'][int(s)]['name'], '\n'
-		    		print "Adding it to your CSV\n"
+		    		print "Pulling nutrient info.\n"
 		    		row = [response.json()['list']['item'][int(s)]['name'], 
 		    		response.json()['list']['item'][int(s)]['ndbno']] + get_nutrient_info(response.json()['list']['item'][int(s)]['ndbno'])
 		    		all_data.append(row)
-		    		print "\n" 
+		    		print "\n"
+	    	else:
+		    	print "Now we will be looking at the", row[0][1:]
 	return all_data
 
 if __name__ == '__main__':
@@ -228,4 +215,16 @@ if __name__ == '__main__':
 		]
 	    writer = csv.writer(csvfile)
 	    writer.writerow(fieldnames)
+	    print "Welcome, Jess Chen (or other HTFI affiliate). My name is Nutrient Bot and I'm here to help you fix food trucks once and for all. \n"
+	    print "I've heard that you are a strange person, so please no funny business. By the end of this, all your problems should have been solved. \n"
+	    print "All proceeds and 50 percent of your organization's equity is now the property of Dhruv Maheshwari. \n" 
+	    print "Are you ready to proceed? Make sure you have put in an 'ingredients.csv' file into the folder that this script is placed in. The file should have one ingredient per line. If not, your computer will explode."
+	    s = raw_input("(Type Yes, or really whatever you want. Just hit enter afterwards)\n")
+	    print "Starting. Get Pumped.\n"
+	    print "\n"
+	    print "\n"
+	    time.sleep(2)
 	    writer.writerows(get_data())
+	    print "There were ", len(not_found), "items for which there were no results. Edit the ingredients file and try again."
+	    for i,item in enumerate(not_found):
+	    	print (i+1),".",item
