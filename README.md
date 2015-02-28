@@ -14,4 +14,4 @@ in the same folder directory as the code. If the file does not exist, it will cr
 
 You can run this file by opening Terminal, navigating to the folder in which this file is located, and typing "python htfi.py"
 
-For any questions, please contact us at admin@hack4impact.org
+For any questions, please contact Dhruv Maheshwari at dhwari@gmail.com
