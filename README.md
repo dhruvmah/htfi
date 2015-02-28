@@ -1,7 +1,7 @@
 # htfi
 Healthy Food Truck Initiative Script
 
-Built by Hack4Impact for the Healthy Food Truck Initiative
+Built for the Healthy Food Truck Initiative
 
 This script reads in a file consisting of types of ingredients (each ingredient on its own line) and then generates a
 CSV file that writes out the nutrients associated with each ingredient. This relies on the USDA Nutrient API and since there
